@@ -1,9 +1,10 @@
 import cv2
 from data_help_function import *
+import matplotlib.pyplot as plt
 
 data_path = "./DATA_Vessel_2020/2019_Soon Woo/Soon Woo/M2/"
 data_name = "earmouse2"
-num_Bscan = 10
+num_Bscan = 5
 reverse = True
 hilbert = True
 
@@ -18,6 +19,9 @@ def left_click(event, x, y, flags, param):
         bscan = scale_to_255(bscan, 0.005, 0.2)
         bscan = cv2.applyColorMap(bscan.astype(np.uint8), cv2.COLORMAP_HOT)
         cv2.imshow('B-scan', bscan)
+        ascan = ascan_plot(data, xp, yp)
+        plt.plot(ascan)
+        plt.show()
         print(tof[yp, xp])
 
 

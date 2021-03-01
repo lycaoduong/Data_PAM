@@ -1,6 +1,5 @@
 from nptdms import TdmsFile
 import numpy as np
-
 from scipy.signal import hilbert
 
 
@@ -34,6 +33,10 @@ def scale_to_255(data, min, max):
     scale_data[scale_data<0] = 0
     scale_data[scale_data>255] = 255
     return scale_data
+
+def ascan_plot(data, xp, yp):
+    ascan = data[yp, :, xp]
+    return ascan
 
 def read_bscan(path_bscan, num_bscan, file_name, reverse = True, hilbert = True):
     _data = []
