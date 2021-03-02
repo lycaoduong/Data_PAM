@@ -1,6 +1,8 @@
 from nptdms import TdmsFile
 import numpy as np
 from scipy.signal import hilbert
+from scipy.signal import find_peaks
+import cv2
 
 
 def TDMS_Info(tdms_file_name, hilbert = True):
@@ -44,7 +46,7 @@ def read_bscan(path_bscan, num_bscan, file_name, reverse = True, hilbert = True)
     tof_img = []
     for b in range(num_bscan):
         print("Bscan:", b+1)
-        bscan = TDMS_Info(path_bscan + file_name + "%s.tdms" %(b+1), hilbert)
+        bscan = TDMS_Info(path_bscan + file_name + "%s.tdms" %(b), hilbert)
         if reverse == True:
             if b%2 ==0:
                 _data.append(bscan)
@@ -63,6 +65,60 @@ def read_bscan(path_bscan, num_bscan, file_name, reverse = True, hilbert = True)
     cscan = np.array(cscan)
     tof_img   = np.array(tof_img)
     return _data, cscan, tof_img
+
+def read_data_from_npy(file):
+    data = np.load(file)
+    # data = data[:, 500:, :]
+    cscan = []
+    tof_img = []
+    num_bscan = data.shape[0]
+    for b in range(num_bscan):
+        cscan.append(np.amax(data[b, :, :], axis=0))
+        tof_img.append(np.argmax(data[b, :, :], axis=0))
+    cscan = np.array(cscan)
+    tof_img = np.array(tof_img)
+    return data, cscan, tof_img
+
+def filter_layer(data, sub_data_length, offset):
+    num_bscan = data.shape[0]
+    num_ascan = data.shape[2]
+    sub_data = np.zeros([num_bscan, sub_data_length, num_ascan])
+    cscan = np.zeros([num_bscan, num_ascan])
+    tof = np.zeros([num_bscan, num_ascan])
+    for b in range(num_bscan):
+        print("Bscan: ", b)
+        for a in range(num_ascan):
+            ascan = data[b, :, a]
+            peaks, _ = find_peaks(ascan, height=0.015, width=2) #Find Peaks
+            if len(peaks)>0:
+                max_position = peaks[np.argmax(ascan[peaks])]
+                if(max_position<(1500-sub_data_length-offset)):
+                    # print(max_position)
+                    sub_data[b, :, a] = ascan[max_position+offset:max_position+sub_data_length+offset]
+                    ascan_sub = sub_data[b, :, a]
+                    peaks, _ = find_peaks(sub_data[b, :, a], height=0.015, width=2)  # Find Peaks
+                    if len(peaks)>0:
+                        max_position_sub = peaks[np.argmax(ascan_sub[peaks])]
+                        # cscan[b, a] = sub_data[b, :, a][peaks][0] #Find First peak
+                        # tof[b, a] = peaks[0]
+                        cscan[b, a] = sub_data[b, :, a][max_position_sub]
+                        tof[b, a] = max_position_sub
+                    else:
+                        cscan[b, a] = 0
+                        tof[b, a] = 255
+                else:
+                    cscan[b, a] = 0
+                    tof[b, a] = 255
+            else:
+                cscan[b, a] = 0
+                tof[b, a] = 255
+    return  sub_data, cscan, tof
+
+
+
+
+
+
 
 
 
