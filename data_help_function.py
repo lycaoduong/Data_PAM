@@ -46,7 +46,7 @@ def read_bscan(path_bscan, num_bscan, file_name, reverse = True, hilbert = True)
     tof_img = []
     for b in range(num_bscan):
         print("Bscan:", b+1)
-        bscan = TDMS_Info(path_bscan + file_name + "%s.tdms" %(b), hilbert)
+        bscan = TDMS_Info(path_bscan + file_name + "%s.tdms" %(b+1), hilbert) #Check the first name of Data file
         if reverse == True:
             if b%2 ==0:
                 _data.append(bscan)
@@ -82,17 +82,19 @@ def read_data_from_npy(file):
 def filter_layer(data, sub_data_length, offset):
     num_bscan = data.shape[0]
     num_ascan = data.shape[2]
+    record_length = data.shape[1]
     sub_data = np.zeros([num_bscan, sub_data_length, num_ascan])
     cscan = np.zeros([num_bscan, num_ascan])
     tof = np.zeros([num_bscan, num_ascan])
     for b in range(num_bscan):
         print("Bscan: ", b)
+        # data[b, :, :] = cv2.blur(data[b, :, :], (3,3))
         for a in range(num_ascan):
             ascan = data[b, :, a]
             peaks, _ = find_peaks(ascan, height=0.015, width=2) #Find Peaks
             if len(peaks)>0:
                 max_position = peaks[np.argmax(ascan[peaks])]
-                if(max_position<(1500-sub_data_length-offset)):
+                if(max_position<(record_length-sub_data_length-offset)):
                     # print(max_position)
                     sub_data[b, :, a] = ascan[max_position+offset:max_position+sub_data_length+offset]
                     ascan_sub = sub_data[b, :, a]
