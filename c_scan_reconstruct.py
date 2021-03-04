@@ -10,7 +10,14 @@ num_Bscan = 350
 reverse = True
 hilbert = False
 
-data, cscan, tof = read_bscan(data_path, num_Bscan, data_name, reverse, hilbert)
+# data, cscan, tof = read_bscan(data_path, num_Bscan, data_name, reverse, hilbert)
+data, cscan, tof = read_data_from_npy("ha.npy")
+
+ascan = ascan_plot(data, 1500, 200)
+fig = plt.figure(figsize=(20, 10))
+ax = fig.add_subplot(111)
+ax.plot(ascan)
+plt.show()
 
 cscan = scale_to_255(cscan, 0.02, 0.07)
 cscan = cv2.resize(cscan, (cscan.shape[1], num_Bscan*10))  # Interpolate data
