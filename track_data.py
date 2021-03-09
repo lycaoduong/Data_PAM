@@ -12,11 +12,11 @@ hilbert = False
 sub_length = 200
 offset = 30
 mouse_move = False
-tracking   = False
+tracking   = True
 
 def left_click(event, x, y, flags, param):
     global xp, yp, mouse_move, tracking
-    if event == cv2.EVENT_MOUSEMOVE:
+    if event == cv2.EVENT_LBUTTONDOWN:
         xp, yp = x, y
         if tracking==True:
             print(xp, yp)
@@ -72,10 +72,13 @@ def left_click(event, x, y, flags, param):
             cv2.imshow('B-Scan', bscan)
             cv2.imshow('Cross-Section', verital_cross_section)
         mouse_move = True
-    elif event == cv2.EVENT_LBUTTONDOWN:
-        tracking = True
-    elif event == cv2.EVENT_LBUTTONUP:
-        tracking = False
+    # elif event == cv2.EVENT_LBUTTONDOWN:
+    #     tracking = True
+    # elif event == cv2.EVENT_LBUTTONUP:
+    #     tracking = False
+    elif event == cv2.EVENT_MOUSEMOVE:
+        xp, yp = x, y
+        mouse_move = True
 
 
 

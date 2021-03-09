@@ -40,6 +40,28 @@ def ascan_plot(data, xp, yp):
     ascan = data[yp, :, xp]
     return ascan
 
+def ascan_2_img(ascan, min = 0, max = 0.2):
+    img = np.zeros([256, len(ascan)])
+    ascan = scale_to_255(ascan, min, max)
+    ascan = ascan.astype(np.uint8)
+    for i in range(len(ascan)):
+        img[255 - ascan[i]:255, i] = ascan[i]
+    return img
+
+def img_2_ascan(img, predict= False):
+    ascan = []
+    if predict==False:
+        for i in range(img.shape[1]):
+            max = np.max(img[:,i])
+            ascan.append(max)
+    elif predict==True:
+        for i in range(img.shape[1]):
+            max = np.count_nonzero(img[:,i])
+            ascan.append(max)
+    ascan = np.array(ascan)
+    return ascan
+
+
 def read_bscan(path_bscan, num_bscan, file_name, reverse = True, hilbert = True):
     _data = []
     cscan = []
