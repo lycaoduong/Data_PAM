@@ -29,7 +29,7 @@ def ascan_reconstruct(data, path_save, min, max):
     bscan = 1
     for y in range(bscan):
         print(y)
-        y = y + 50
+        y = y + 200
         for x in range(data.shape[2]):
             ascan = ascan_plot(data, x, y)
             img = ascan_2_img(ascan, min, max)
@@ -74,12 +74,12 @@ def fastICA(img_ascan, n_compo):
     models = [ascan, S_]
     S = S_.T
     return S
-# data, cscan, tof = read_data_from_npy("tu_hand_15khz_hilbert.npy")
-# ascan_reconstruct(data, ascan_path, 0, 0.08)
+data, cscan, tof = read_data_from_npy("tu_hand_15khz_hilbert.npy")
+ascan_reconstruct(data, ascan_path, 0, 0.08)
 img = cv2.imread("./data_ascan/hand_tu/2d_ascan_hilbert/50y_120x_ascan.png")
-ascan = img_to_ascan_reconstruct(img)
-ascan = ascan/255
-hilbert = hilbert_scan(ascan)
-plt.plot(ascan)
-plt.plot(hilbert+0.5)
-plt.show()
+# ascan = img_to_ascan_reconstruct(img)
+# ascan = ascan/255
+# hilbert = hilbert_scan(ascan)
+# plt.plot(ascan)
+# plt.plot(hilbert+0.5)
+# plt.show()
