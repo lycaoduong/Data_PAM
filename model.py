@@ -57,6 +57,6 @@ def unet_ascan(inputs=inpt):
 
     return model
 
-inpt = Input(shape=(256, 256, 1))
-print(inpt.shape)
-model = unet_ascan(inpt)
+# inpt = Input(shape=(256, 256, 1))
+# print(inpt.shape)
+# model = unet_ascan(inpt)

@@ -76,7 +76,7 @@ def fastICA(img_ascan, n_compo):
     return S
 data, cscan, tof = read_data_from_npy("tu_hand_15khz_hilbert.npy")
 ascan_reconstruct(data, ascan_path, 0, 0.08)
-img = cv2.imread("./data_ascan/hand_tu/2d_ascan_hilbert/50y_120x_ascan.png")
+# img = cv2.imread("./data_ascan/hand_tu/2d_ascan_hilbert/50y_120x_ascan.png")
 # ascan = img_to_ascan_reconstruct(img)
 # ascan = ascan/255
 # hilbert = hilbert_scan(ascan)

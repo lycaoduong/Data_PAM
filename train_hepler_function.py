@@ -31,3 +31,45 @@ def extract_random(full_imgs,full_masks, patch_h,patch_w, N_patches):
             iter_tot +=1   #total
             k+=1  #per full_img
     return patches, patches_masks
+
+def extract_ordered_overlap(full_imgs, patch_h, patch_w,stride_h,stride_w):
+    img_h = full_imgs.shape[1]
+    img_w = full_imgs.shape[2]
+    assert ((img_h - patch_h) % stride_h == 0 and (img_w - patch_w) % stride_w == 0)
+    N_patches_img = ((img_h - patch_h) // stride_h + 1) * ((img_w - patch_w) // stride_w + 1)
+    N_patches_img_total = N_patches_img*full_imgs.shape[0]
+    patches = np.empty((N_patches_img_total,  patch_h, patch_w))
+    iter_tot = 0
+    for i in range(full_imgs.shape[0]):  #loop over the full images
+        for h in range((img_h-patch_h)//stride_h+1):
+            for w in range((img_w-patch_w)//stride_w+1):
+                patch = full_imgs[i,h*stride_h:(h*stride_h)+patch_h,w*stride_w:(w*stride_w)+patch_w]
+                patches[iter_tot]=patch
+                iter_tot +=1   #total
+    assert (iter_tot==N_patches_img_total)
+    return patches  #array with all the full_imgs divided in patches
+
+def recompose_overlap(preds, img_h, img_w, stride_h, stride_w):
+    patch_h = preds.shape[1]
+    patch_w = preds.shape[2]
+    N_patches_h = (img_h-patch_h)//stride_h+1
+    N_patches_w = (img_w-patch_w)//stride_w+1
+    N_patches_img = N_patches_h * N_patches_w
+    # print("N_patches_h: " +str(N_patches_h))
+    # print("N_patches_w: " +str(N_patches_w))
+    # print("N_patches_img: " +str(N_patches_img))
+    N_full_imgs = preds.shape[0]//N_patches_img
+    # print("According to the dimension inserted, there are " + str(N_full_imgs) + " full images (of " + str(img_h) + "x" + str(img_w) + " each)")
+    full_prob = np.zeros((N_full_imgs, img_h, img_w))
+    full_sum = np.zeros((N_full_imgs, img_h, img_w))
+    k = 0
+    for i in range(N_full_imgs):
+        for h in range(N_patches_h):
+            for w in range(N_patches_w):
+                full_prob[i, h*stride_h:(h*stride_h+patch_h), w*stride_w:(w*stride_w+patch_w)] += preds[k]
+                full_sum[i, h * stride_h:(h * stride_h + patch_h), w * stride_w:(w * stride_w + patch_w)] += 1
+                k+=1
+    assert (k==preds.shape[0])
+    final_img_pred = full_prob/full_sum
+    # print(final_img_pred.shape)
+    return final_img_pred
