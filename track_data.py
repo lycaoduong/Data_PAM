@@ -32,7 +32,7 @@ def left_click(event, x, y, flags, param):
             verital_cross_section = cv2.applyColorMap(verital_cross_section.astype(np.uint8), cv2.COLORMAP_HOT)
 
             ascan = ascan_plot(data, xp, yp)
-            raw_data = ascan_plot(data_o, xp, yp) + 0.08
+            # raw_data = ascan_plot(data_o, xp, yp) + 0.08
             peaks, _ = find_peaks(ascan, height=0.015, width=2)
 
             max_position = peaks[np.argmax(ascan[peaks])]
@@ -45,7 +45,7 @@ def left_click(event, x, y, flags, param):
             fig = plt.figure(figsize=(20, 10))
             ax = fig.add_subplot(111)
             ax.plot(ascan)
-            ax.plot(raw_data)
+            # ax.plot(raw_data)
             ax.plot(max_position, ascan[max_position], "x")
             ax.text(max_position+offset, ascan[max_position], "Skin")
 
@@ -91,7 +91,8 @@ data, cscan, tof = read_data_from_npy("tu_hand_15khz_hilbert.npy")
 cscan = scale_to_255(cscan, 0.02, 0.07)
 # cscan = cv2.resize(cscan, (cscan.shape[1], num_Bscan*10))
 cscan_color = cv2.applyColorMap(cscan.astype(np.uint8), cv2.COLORMAP_HOT)
-cv2.imwrite("tu_hand_hilbert.png", cscan_color)
+# cscan = scale_to_255(cscan, 50, 255)
+# cscan_color = cv2.applyColorMap(cscan.astype(np.uint8), cv2.COLORMAP_HOT)
 
 # print(tof.shape)
 # tof = cv2.resize(tof.astype(np.uint8), (tof.shape[1], num_Bscan*10), interpolation = cv2.INTER_LINEAR)
@@ -104,6 +105,12 @@ sub_cscan = scale_to_255(sub_cscan, 0.015, 0.04)
 sub_cscan_color = cv2.applyColorMap(sub_cscan.astype(np.uint8), cv2.COLORMAP_HOT)
 blur = cv2.blur(sub_cscan_color,(3,3))
 cv2.imwrite("sublayer.png", blur)
+
+# sub_data, sub_cscan, sub_tof = filter_layer_predict(data, 200, 30)
+# sub_cscan = scale_to_255( sub_cscan, 30, 200)
+# sub_cscan_color = cv2.applyColorMap(sub_cscan.astype(np.uint8), cv2.COLORMAP_HOT)
+# blur = cv2.blur(sub_cscan_color,(3,3))
+
 blood_vessel = blur.copy()
 
 #

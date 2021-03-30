@@ -68,7 +68,7 @@ def read_bscan(path_bscan, num_bscan, file_name, reverse = True, hilbert = True)
     tof_img = []
     for b in range(num_bscan):
         print("Bscan:", b+1)
-        bscan = TDMS_Info(path_bscan + file_name + "%s.tdms" %(b+1), hilbert) #Check the first name of Data file
+        bscan = TDMS_Info(path_bscan + file_name + "%s.tdms" %(b+0), hilbert) #Check the first name of Data file
         if reverse == True:
             if b%2 ==0:
                 _data.append(bscan)
@@ -130,6 +130,38 @@ def filter_layer(data, sub_data_length, offset):
                     else:
                         cscan[b, a] = 0
                         tof[b, a] = 255
+                else:
+                    cscan[b, a] = 0
+                    tof[b, a] = 255
+            else:
+                cscan[b, a] = 0
+                tof[b, a] = 255
+    return  sub_data, cscan, tof
+
+
+def filter_layer_predict(data, sub_data_length, offset):
+    num_bscan = data.shape[0]
+    num_ascan = data.shape[2]
+    record_length = data.shape[1]
+    cscan = np.zeros([num_bscan, num_ascan])
+    tof = np.zeros([num_bscan, num_ascan])
+    for b in range(num_bscan):
+        print("Bscan: ", b)
+        # data[b, :, :] = cv2.blur(data[b, :, :], (3,3))
+        for a in range(num_ascan):
+            ascan = data[b, :, a]
+            peaks, _ = find_peaks(ascan, height=0.015, width=2) #Find Peaks
+            if len(peaks)>0:
+                max_position = peaks[np.argmax(ascan[peaks])]
+                sub_data = ascan[max_position+offset:]
+                sub_data = np.array(sub_data)
+                peaks, _ = find_peaks(sub_data, height=0.015, width=2)  # Find Peaks
+                if len(peaks)>0:
+                    max_position_sub = peaks[np.argmax(sub_data[peaks])]
+                    # cscan[b, a] = sub_data[b, :, a][peaks][0] #Find First peak
+                    # tof[b, a] = peaks[0]
+                    cscan[b, a] = sub_data[max_position_sub]
+                    tof[b, a] = max_position_sub
                 else:
                     cscan[b, a] = 0
                     tof[b, a] = 255
