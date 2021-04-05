@@ -7,16 +7,18 @@ from scipy.signal import hilbert
 import cv2
 import itk
 
-# data = np.load("./result/predict_tu_100u_60.npy")
-Data = np.zeros((800,1024,1024))
+numBscan = 700
 
-for i in range(800):
+# data = np.load("./result/predict_tu_100u_60.npy")
+Data = np.zeros((numBscan,1024,1024))
+
+for i in range(numBscan):
     print(i)
-    img = cv2.imread("./aTu/bscan_predict/bscan_%s.png" %i)
+    img = cv2.imread("./aTu/tuFoot/predict/bscan_%s.png" %i)
     img = img[:,:,0]
     Data[i,:,:] = img
 
 image = itk.GetImageFromArray(Data.astype(np.uint8))
-itk.imwrite(image, "./result/segmentation.nrrd")
+itk.imwrite(image, "./result/tuFoot.nrrd")
 
 print("Finish")

@@ -2,8 +2,8 @@ import cv2
 import os
 import numpy as np
 
-input_d = "./aTu/xpath/"
-output_d = "./aTu/ypath/"
+input_d = "./aTu/tuFoot_train/images/"
+output_d = "./aTu/tuFoot_train/label/blood/"
 # list = os.listdir(img_folder)
 # numfile = len(list)
 width    = 640

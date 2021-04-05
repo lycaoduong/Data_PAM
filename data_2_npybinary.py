@@ -1,15 +1,15 @@
 from data_help_function import *
 import numpy as np
 
-data_path = "./DATA/2020.9.8_test5/"
-data_name = "test5"
-num_Bscan = 1300
+data_path = "./aTu/TU_Foot_AR_PAM/"
+data_name = "tu_foot8_100um"
+num_Bscan = 700
 reverse = False
 hilbert = True
 min = 0.005
 max = 0.2
 
-npy_name = "earmice_2020.npy"
+npy_name = "./result/earmouse.npy"
 
 
 def tdms_2_npy(data_path, num_Bscan, data_name, reverse, hilbert):

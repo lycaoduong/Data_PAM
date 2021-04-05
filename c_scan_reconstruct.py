@@ -7,6 +7,7 @@ from scipy.signal import find_peaks, peak_widths
 from sklearn.decomposition import FastICA
 from scipy.fftpack import fft,fftshift
 from scipy.io import savemat
+import pandas as pd
 
 data_path = "./DATA_Vessel_2020/2019_Soon Woo/Soon Woo/M2/"
 data_name = "earmouse2"
@@ -169,27 +170,45 @@ def left_click(event, x, y, flags, param):
 
 
 
-data, cscan, tof = read_data_from_npy("./result/predict_earmouse_2020.npy")
+data, cscan, tof = read_data_from_npy("./result/tuFoot.npy")
+print(data.shape)
+print(np.max(data))
+
+# for i in range(data.shape[0]):
+#     # pd.DataFrame(data[i,:,:]).to_csv("./result/bscan_earmouse_dat/bscan_%s.csv" %i)
+#     cv2.imwrite("./result/bscan_image/bscan_%s.png" %i, data[i,:,:])
+#     print(i)
+
+# mask = data[824:-1, :, 0:370]
+# mask2 = data[824:-1, :, 2639:-1]
+# print(mask.shape)
+#
+# data[200:675, :, 300: 670] = mask
+# data[0:475, :, 2639:-1] = mask2
+#
+# data = data.astype(np.uint8)
+# np.save("./result/earmous_new.npy", data)
+
+
+ascan = data[350,:, 500]
+
+fig = plt.figure(figsize=(20, 10))
+ax = fig.add_subplot(111)
+ax.plot(ascan)
+plt.show()
+
+
+# offset = 0
+# skin, blood, tof = cscan_from_predictdata(data, offset)
 #
 #
-# ascan = data[312,:, 50]
 #
-# fig = plt.figure(figsize=(20, 10))
-# ax = fig.add_subplot(111)
-# ax.plot(ascan)
-# plt.show()
-
-offset = 0
-skin, blood, tof = cscan_from_predictdata(data, offset)
-
-
-
-# cv2.imwrite("tu_%s_skin.png" %offset, skin)
-cv2.imwrite("tu_%s.png" %offset, tof)
-# cv2.imwrite("tu_%s_tof.png" %offset, tof)
-cv2.imshow("a", tof)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# # cv2.imwrite("tu_%s_skin.png" %offset, skin)
+# cv2.imwrite("tu_%s.png" %offset, tof)
+# # cv2.imwrite("tu_%s_tof.png" %offset, tof)
+# cv2.imshow("a", tof)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 
 
 

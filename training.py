@@ -10,6 +10,7 @@ from datetime import datetime
 import cv2
 from train_hepler_function import *
 from data_help_function import *
+from keras.models import load_model
 
 patch_w = 256
 patch_h = 256
@@ -18,9 +19,9 @@ width = 256
 height = 256
 
 
-file_path = "./aTu/"
-xpath = os.path.join(file_path, "orgin")
-ypath = os.path.join(file_path, "ypath")
+file_path = "./aTu/tuFoot_train/"
+xpath = os.path.join(file_path, "images")
+ypath = os.path.join(file_path, "label")
 
 data = os.listdir(xpath)
 label = os.listdir(ypath)
@@ -34,14 +35,14 @@ for idx, imname in enumerate(data):
     img = cv2.imread(os.path.join(xpath, imname))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = gray/255
-    x_image[idx, :, 0:1000] = gray
+    x_image[idx, :, 0:1000] = gray[0:1024, :]
 
 print(x_image.shape)
 
 for idx, imname in enumerate(label):
     print(os.path.join(ypath, imname))
     img = cv2.imread(os.path.join(ypath, imname))
-    y_image[idx, :, 0:1000] = img[:,:,0]/255
+    y_image[idx, :, 0:1000] = img[0:1024,:,0]/255
 
 print(y_image.shape)
 
@@ -59,6 +60,9 @@ print(inpt.shape)
 model = unet_ascan(inpt)
 adam = Adam(lr=0.0001)
 model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
+
+# model = load_model('tuFoot.h5')
+
 result = model.fit(x_train, y_train, batch_size=4, epochs=10, validation_split=0.2)
 plt.plot(np.arange(len(result.history['accuracy'])), result.history['accuracy'], label='training')
 plt.plot(np.arange(len(result.history['val_accuracy'])), result.history['val_accuracy'], label='validation')
@@ -67,7 +71,7 @@ plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
-model.save('multiclass_bscan.h5')
+model.save('tuFoot_new.h5')
 
 for i in range(4):
     output = model.predict(np.expand_dims(x_train[3+i, :, :, :], axis=0))

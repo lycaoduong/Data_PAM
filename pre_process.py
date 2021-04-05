@@ -1,10 +1,10 @@
 import os
 import cv2
 
-file_path = "./aTu/"
-origin = os.path.join(file_path, "orgin")
+file_path = "./aTu/tuFoot_train/"
+origin = os.path.join(file_path, "images")
 bloodpath = os.path.join(file_path, "blood")
-save_path = "./aTu/ypath/"
+save_path = "./aTu/tuFoot_train/label/"
 
 
 data = os.listdir(origin)

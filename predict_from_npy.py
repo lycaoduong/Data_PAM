@@ -13,9 +13,9 @@ height = 256
 patch_w = 256
 patch_h = 256
 
-num_bscan = 1300
-num_ascan = 3010
-depth = 256
+num_bscan = 700
+num_ascan = 1024
+depth = 1280
 
 min = 0
 max = 255
@@ -23,7 +23,7 @@ max = 255
 file_per_predict = 1
 
 
-data, cscan, tof = read_data_from_npy("./DATA/earmice_2020.npy")
+data, cscan, tof = read_data_from_npy("./result/tuFoot.npy")
 print(data.shape)
 
 pre_pare_data = np.zeros((num_bscan, depth, num_ascan))
@@ -31,7 +31,7 @@ predict_data  = np.zeros((num_bscan, depth, num_ascan))
 
 x_train = np.zeros([file_per_predict, height, depth])
 
-pre_pare_data[:,0:179,:]= data[:,0:-1,:]
+pre_pare_data[:,0:1199,0:999]= data[:,0:-1,0:-1]
 print(pre_pare_data.shape)
 
 
@@ -54,9 +54,9 @@ for b in range(num_bscan):
         img_predict = np.squeeze(img_predict, axis=0)
         ascan_predict = img_2_ascan(img_predict, predict=True)
         predict_data[b, :, a] = ascan_predict
-    np.save("./result/earmouse_bscan/bscan_%s"%b, predict_data[b,:,:])
+    np.save("./result/foot_bscan/bscan_%s"%b, predict_data[b,:,:])
 
-np.save('./result/predict_earmouse_2020.npy', predict_data)
+np.save('./result/predict_foot_2020.npy', predict_data)
 
 
 
