@@ -73,3 +73,21 @@ def recompose_overlap(preds, img_h, img_w, stride_h, stride_w):
     final_img_pred = full_prob/full_sum
     # print(final_img_pred.shape)
     return final_img_pred
+
+
+def find_submultiple(n):
+    sub = []
+    for i in range(1, n+1):
+        if(n%i==0):
+            sub.append(i)
+    sub = np.array(sub)
+    return sub
+
+def find_stride(full_size_h, full_size_w, patch_h, patch_w):
+    stride_h = find_submultiple(full_size_h-patch_h)
+    stride_w = find_submultiple(full_size_w-patch_w)
+    stride_h = stride_h[stride_h<=patch_h]
+    stride_w = stride_w[stride_w<=patch_w]
+    stride_h = np.max(stride_h)
+    stride_w = np.max(stride_w)
+    return  stride_h, stride_w

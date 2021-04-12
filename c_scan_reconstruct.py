@@ -74,7 +74,7 @@ def cscan_from_predictdata(data, offset):
         print("Bscan: ", b)
         for a in range(data.shape[2]):
             ascan = ascan_plot(data, a, b)
-            peaks, _ = find_peaks(ascan, height=offset, width=3, distance=35) #35
+            peaks, _ = find_peaks(ascan, height=offset, width=2, distance=35) #35
             if len(peaks) == 1:
                 skin[b, a] = ascan[peaks[0]]
             elif len(peaks) == 2:
@@ -103,10 +103,10 @@ def cscan_from_predictdata(data, offset):
     skin = scale_to_255(skin, 0, 255)
     skin = cv2.applyColorMap(skin.astype(np.uint8), cv2.COLORMAP_HOT)
 
-    blood = scale_to_255(blood, 20, 255)
+    blood = scale_to_255(blood, 0, 255)
     blood[blood > 220] = 220
-    blood = blood - 50
-    blood[blood<0] = 0
+    # blood = blood - 50
+    # blood[blood<0] = 0
     # blood = scale_to_255(blood, 120, 255)
     blood = cv2.applyColorMap(blood.astype(np.uint8), cv2.COLORMAP_HOT)
     blood = cv2.blur(blood, (3, 3))
@@ -130,23 +130,23 @@ def fastICA(img_ascan, n_compo):
     return S
 
 
-def left_click(event, x, y, flags, param):
-    global xp, yp, mouse_move, tracking
-    if event == cv2.EVENT_LBUTTONDOWN:
-        xp, yp = x, y
-        print(xp, yp)
-        ascan = ascan_plot(data, xp, yp)
-        peaks, _ = find_peaks(ascan, height=20, width=3, distance=35)
-        fig = plt.figure(figsize=(20, 10))
-        ax = fig.add_subplot(111)
-        ax.plot(ascan)
-        ax.plot(peaks, ascan[peaks], "x")
-        plt.savefig('ascan.png')
-        ascanimg = cv2.imread("ascan.png")
-        cv2.imshow("A-Scan", ascanimg)
-    elif event == cv2.EVENT_MOUSEMOVE:
-        xp, yp = x, y
-        mouse_move = True
+# def left_click(event, x, y, flags, param):
+#     global xp, yp, mouse_move, tracking
+#     if event == cv2.EVENT_LBUTTONDOWN:
+#         xp, yp = x, y
+#         print(xp, yp)
+#         ascan = ascan_plot(data, xp, yp)
+#         peaks, _ = find_peaks(ascan, height=20, width=3, distance=35)
+#         fig = plt.figure(figsize=(20, 10))
+#         ax = fig.add_subplot(111)
+#         ax.plot(ascan)
+#         ax.plot(peaks, ascan[peaks], "x")
+#         plt.savefig('ascan.png')
+#         ascanimg = cv2.imread("ascan.png")
+#         cv2.imshow("A-Scan", ascanimg)
+#     elif event == cv2.EVENT_MOUSEMOVE:
+#         xp, yp = x, y
+#         mouse_move = True
 
 
 
@@ -170,9 +170,9 @@ def left_click(event, x, y, flags, param):
 
 
 
-data, cscan, tof = read_data_from_npy("./result/tuFoot.npy")
-print(data.shape)
-print(np.max(data))
+# data, cscan, tof = read_data_from_npy("./result/predict_tu_100u_60.npy")
+# print(data.shape)
+# print(np.max(data))
 
 # for i in range(data.shape[0]):
 #     # pd.DataFrame(data[i,:,:]).to_csv("./result/bscan_earmouse_dat/bscan_%s.csv" %i)
@@ -189,26 +189,68 @@ print(np.max(data))
 # data = data.astype(np.uint8)
 # np.save("./result/earmous_new.npy", data)
 
+# data, cscan, tof = read_data_from_npy("./result/tufoot_8bit.npy")
+# ascan = data[350,:, 500]
+#
+# fig = plt.figure(figsize=(20, 10))
+# ax = fig.add_subplot(111)
+# ax.plot(ascan)
+# plt.show()
 
-ascan = data[350,:, 500]
-
-fig = plt.figure(figsize=(20, 10))
-ax = fig.add_subplot(111)
-ax.plot(ascan)
-plt.show()
 
 
 # offset = 0
 # skin, blood, tof = cscan_from_predictdata(data, offset)
-#
-#
-#
-# # cv2.imwrite("tu_%s_skin.png" %offset, skin)
+
+
+
+# cv2.imwrite("tu_%s_skin.png" %offset, skin)
 # cv2.imwrite("tu_%s.png" %offset, tof)
-# # cv2.imwrite("tu_%s_tof.png" %offset, tof)
-# cv2.imshow("a", tof)
+# cv2.imwrite("tu_%s_tof.png" %offset, tof)
+# cv2.imshow("a", skin)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
+
+ori_data = np.load("./result/foot_ori.npy")
+print(ori_data.shape)
+
+
+data = np.load("./result/foot_segment.npy")
+print(data.shape)
+# print(np.max(data))
+#
+data[data>200] = 0
+data[data<128] = 0
+data[data!=0] = 1
+
+seg = data*ori_data
+np.save("./result/foot_blood_segment.npy", seg.astype(np.uint8))
+# cscan = []
+# num_bscan = data.shape[0]
+# for b in range(num_bscan):
+#     cscan.append(np.amax(seg[b, :, :], axis=0))
+#     print(b)
+# cscan = np.array(cscan)
+# # cscan[cscan<190] = 190
+# # cscan = scale_to_255(cscan, 190, 255)
+# cscan = cscan.astype(np.uint8)
+# cscan = cv2.applyColorMap(cscan, cv2.COLORMAP_HOT)
+# cscan = cv2.blur(cscan, (3,3))
+# cv2.imwrite("skin.png", cscan)
+# cv2.imshow("a", cscan)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+# data = np.zeros((700,1024,1024))
+#
+# for i in range(700):
+#     img = cv2.imread("./aTu/tuFoot/predict/bscan_%s.png" %i)
+#     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#     data[i,:,:] = img
+#     print(i)
+# data = data.astype(np.uint8)
+# np.save("./result/foot_segment.npy", data)
+
 
 
 

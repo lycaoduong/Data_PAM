@@ -7,18 +7,15 @@ from scipy.signal import hilbert
 import cv2
 import itk
 
-numBscan = 700
 
 # data = np.load("./result/predict_tu_100u_60.npy")
-Data = np.zeros((numBscan,1024,1024))
+data = np.load("./result/foot_skin_segment.npy")
 
-for i in range(numBscan):
-    print(i)
-    img = cv2.imread("./aTu/tuFoot/predict/bscan_%s.png" %i)
-    img = img[:,:,0]
-    Data[i,:,:] = img
+def numpy2nrrd(npdata):
+    image = itk.GetImageFromArray(npdata.astype(np.uint8))
+    return  image
 
-image = itk.GetImageFromArray(Data.astype(np.uint8))
-itk.imwrite(image, "./result/tuFoot.nrrd")
+image = numpy2nrrd(data)
+itk.imwrite(image, "./result/foot_skin.nrrd")
 
 print("Finish")

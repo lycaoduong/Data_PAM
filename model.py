@@ -57,6 +57,41 @@ def unet_ascan(inputs=inpt):
 
     return model
 
+
+def unet_Ha(inputs=inpt):
+    conv1 = Conv2D(16, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+    conv2 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool1)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+    conv3 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool2)
+    drop3 = Dropout(0.2)(conv3)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(drop3)
+
+    conv4 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(pool3)
+    drop4 = Dropout(0.2)(conv4)
+
+    up5 = Conv2D(64, 2, activation='relu', padding='same', kernel_initializer='he_normal')(UpSampling2D(size=(2, 2))(drop4))
+    merge5 = concatenate([drop3, up5], axis=3)
+    conv5 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge5)
+
+    up6 = Conv2D(32, 2, activation='relu', padding='same', kernel_initializer='he_normal')(UpSampling2D(size=(2, 2))(conv5))
+    merge6 = concatenate([conv2, up6], axis=3)
+    conv6 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge6)
+
+    up7 = Conv2D(16, 2, activation='relu', padding='same', kernel_initializer='he_normal')(UpSampling2D(size=(2, 2))(conv6))
+    merge7 = concatenate([conv1, up7], axis=3)
+    conv7 = Conv2D(16, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7)
+
+
+    conv8 = Conv2D(1, 3, padding='same')(conv7)
+
+    output = Activation('sigmoid')(conv8)
+    model = Model(inputs, output)
+
+    return model
+
 # inpt = Input(shape=(256, 256, 1))
 # print(inpt.shape)
 # model = unet_ascan(inpt)
